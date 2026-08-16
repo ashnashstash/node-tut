@@ -14,19 +14,36 @@ app.get('/api/products', (req, res)=>{
   res.json(newProduct)
 })
 
-app.get('/api/products/:productId', (req, res)=>{
-  const {productId} = req.params;
-  const singleProduct = products.find((product) => product.id === Number(productId))
-  if(!singleProduct) 
-    {
-      return res.status(404).send('product does not exist');
-    }
-  return res.json(singleProduct)
-})
+// app.get('/api/products/:productId', (req, res)=>{
+//   const {productId} = req.params;
+//   const singleProduct = products.find((product) => product.id === Number(productId))
+//   if(!singleProduct) 
+//     {
+//       return res.status(404).send('product does not exist');
+//     }
+//   return res.json(singleProduct)
+// })
 
-app.get('/api/products/:productId/reviews/:reviewId', (req, res)=>{
-  console.log(req.params)
-  res.send('hello world')
+// app.get('/api/products/:productId/reviews/:reviewId', (req, res)=>{
+//   console.log(req.params)
+//   res.send('hello world')
+// })
+
+app.get('/api/products/query', (req, res)=>{
+  const {search, limit} = req.query
+  let sortedProduct = [...products] //shallow copy of products
+  if(search){
+    sortedProduct = sortedProduct.filter((products)=>{
+      return products.name.startsWith(search)
+    })
+  }
+  if(limit){
+    sortedProduct = sortedProduct.slice(0, Number(limit))
+  }
+  if(sortedProduct.length <1){
+    return res.status(200).json({succes : true, data : []})
+  }
+  return res.status(200).json(sortedProduct)
 })
 
 app.listen(5000, ()=>{
